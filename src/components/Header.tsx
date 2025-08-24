@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
                 <Shield className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">PokeTradeHub</span>
+              <span className="text-xl font-bold text-gray-900">pokeXchange</span>
             </div>
           </div>
 
