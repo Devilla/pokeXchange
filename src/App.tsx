@@ -6,6 +6,7 @@ import TradingPost from './components/TradingPost';
 import CreatePost from './components/CreatePost';
 import UserProfile from './components/UserProfile';
 import PaymentModal from './components/PaymentModal';
+import ProofModal, { ProofData } from './components/ProofModal';
 
 export interface TradingPostData {
   id: string;
@@ -20,6 +21,7 @@ export interface TradingPostData {
   timestamp: string;
   replies: number;
   verified: boolean;
+  proof?: ProofData;
 }
 
 const samplePosts: TradingPostData[] = [
@@ -35,7 +37,18 @@ const samplePosts: TradingPostData[] = [
     tags: ['shiny', 'legendary', 'bundle', 'verified'],
     timestamp: '2 hours ago',
     replies: 5,
-    verified: true
+    verified: true,
+    proof: {
+      id: '1',
+      screenshots: [
+        'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/442576/pexels-photo-442576.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      description: 'Screenshots showing both Pokemon with original trainer IDs and event ribbons.',
+      timestamp: '2 hours ago',
+      verified: true,
+      verificationNotes: 'Proof verified by moderator. All details match event distribution records.'
+    }
   },
   {
     id: '2',
@@ -48,7 +61,16 @@ const samplePosts: TradingPostData[] = [
     tags: ['beast-ball', 'dream-ball', 'competitive', 'ha'],
     timestamp: '4 hours ago',
     replies: 12,
-    verified: true
+    verified: true,
+    proof: {
+      id: '2',
+      screenshots: [
+        'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      description: 'Dream Ball Eevee with Hidden Ability and 5 perfect IVs.',
+      timestamp: '4 hours ago',
+      verified: false
+    }
   },
   {
     id: '3',
@@ -88,6 +110,11 @@ function App() {
     isOpen: boolean;
     post: TradingPostData | null;
   }>({ isOpen: false, post: null });
+  const [proofModal, setProofModal] = useState<{
+    isOpen: boolean;
+    post: TradingPostData | null;
+    mode: 'view' | 'submit';
+  }>({ isOpen: false, post: null, mode: 'submit' });
 
   const handleCreatePost = (newPost: Omit<TradingPostData, 'id' | 'timestamp' | 'replies'>) => {
     const post: TradingPostData = {
@@ -107,6 +134,25 @@ function App() {
   const handlePaymentComplete = () => {
     // Here you could update the post status, send notifications, etc.
     console.log('Payment completed for trade');
+  };
+
+  const handleProofClick = (post: TradingPostData) => {
+    setProofModal({ isOpen: true, post, mode: 'submit' });
+  };
+
+  const handleViewProofClick = (post: TradingPostData) => {
+    setProofModal({ isOpen: true, post, mode: 'view' });
+  };
+
+  const handleProofSubmit = (proofData: ProofData) => {
+    if (proofModal.post) {
+      const updatedPosts = posts.map(post => 
+        post.id === proofModal.post!.id 
+          ? { ...post, proof: proofData }
+          : post
+      );
+      setPosts(updatedPosts);
+    }
   };
 
   const filteredPosts = posts.filter(post => {
@@ -156,6 +202,8 @@ function App() {
                     key={post.id} 
                     post={post} 
                     onPaymentClick={handlePaymentClick}
+                    onProofClick={handleProofClick}
+                    onViewProofClick={handleViewProofClick}
                   />
                 ))}
               </div>
@@ -179,6 +227,15 @@ function App() {
         tradePrice={paymentModal.post?.price || ''}
         sellerName={paymentModal.post?.user || ''}
         onPaymentComplete={handlePaymentComplete}
+      />
+
+      <ProofModal
+        isOpen={proofModal.isOpen}
+        onClose={() => setProofModal({ isOpen: false, post: null, mode: 'submit' })}
+        tradeTitle={proofModal.post?.title || ''}
+        onProofSubmit={handleProofSubmit}
+        existingProof={proofModal.post?.proof}
+        mode={proofModal.mode}
       />
     </div>
   );

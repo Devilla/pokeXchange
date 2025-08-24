@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Image } from 'lucide-react';
 import { TradingPostData } from '../App';
 
 interface CreatePostProps {
@@ -15,7 +15,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onCreatePost, onCancel }) => {
     price: '',
     description: '',
     tags: [] as string[],
-    newTag: ''
+    newTag: '',
+    includeProof: false
   });
 
   const categories = [
@@ -175,6 +176,35 @@ const CreatePost: React.FC<CreatePostProps> = ({ onCreatePost, onCancel }) => {
               </button>
             </div>
           </div>
+
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="includeProof"
+              checked={formData.includeProof}
+              onChange={(e) => setFormData({ ...formData, includeProof: e.target.checked })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="includeProof" className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+              <Image className="w-4 h-4" />
+              <span>I will provide proof for this trade</span>
+            </label>
+          </div>
+
+          {formData.includeProof && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <Image className="w-5 h-5 text-green-600 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-green-900">Proof Commitment</h4>
+                  <p className="text-sm text-green-700 mt-1">
+                    You've committed to providing proof for this trade. After creating the post, 
+                    you can upload screenshots and verification materials to build trust with potential traders.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex space-x-4 pt-4">
             <button
